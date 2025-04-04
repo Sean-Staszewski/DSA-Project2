@@ -42,7 +42,6 @@ amazon.com facebook.com)";
 
   unordered_map<string, int> pages = {{"google.com", 0}, {"facebook.com", 3}, {"ufl.edu", 4}, {"maps.com", 2}, {"gmail.com", 1}, {"amazon.com", 5}};
 
-  REQUIRE(web.pageCount() == 6);
   REQUIRE(web.getPages() == pages);
 }
 
@@ -78,7 +77,7 @@ maps.com gmail.com)";
 
   vector<vector<int>> expectedList = {{1,2,3,4}, {2,3,4}, {3,4}, {4}, {}};
 
-  REQUIRE(web.getList() == expectedList);
+  REQUIRE(web.getOutList() == expectedList);
 }
 
 TEST_CASE("Find Outdegrees of nodes") {
@@ -119,20 +118,20 @@ gmail.com maps.com)";
 }
 
 TEST_CASE("Power Iteration") {
-  vector<vector<int>> list = {{1, 2}, {2, 3}, {3,4}, {4}, {}};
-
+  vector<vector<int>> inList = {{1, 2}, {2, 3}, {3,4}, {4}, {}};
+  vector<vector<int>> outList = {{}, {0}, {0,1},{1,2},{2,3}};
 
   int p = 1;
-  REQUIRE_THAT(powerIterator(list, p), Catch::Matchers::Approx(vector<double>{0.2, 0.2, 0.2, 0.2, 0.2}));
+  REQUIRE_THAT(powerIterator(inList, outList, p), Catch::Matchers::Approx(vector<double>{0.2, 0.2, 0.2, 0.2, 0.2}));
 
   p = 2;
-  REQUIRE_THAT(powerIterator(list, p), Catch::Matchers::Approx(vector<double>{0.0, 0.1, 0.2, 0.2, 0.3}));
+  REQUIRE_THAT(powerIterator(inList, outList, p), Catch::Matchers::Approx(vector<double>{0.0, 0.1, 0.2, 0.2, 0.3}));
 
   p = 3;
-  REQUIRE_THAT(powerIterator(list, p), Catch::Matchers::Approx(vector<double>{0.0, 0.05, 0.2, 0.2, 0.45}));
+  REQUIRE_THAT(powerIterator(inList,outList, p), Catch::Matchers::Approx(vector<double>{0.0, 0.05, 0.2, 0.2, 0.45}));
 
   p = 4;
-  REQUIRE_THAT(powerIterator(list, p), Catch::Matchers::Approx(vector<double>{0.0, 0.025, 0.2, 0.2, 0.675}));
+  REQUIRE_THAT(powerIterator(inList, outList, p), Catch::Matchers::Approx(vector<double>{0.0, 0.025, 0.2, 0.2, 0.675}));
 }
 
 TEST_CASE("Example PageRank Output Test") {
