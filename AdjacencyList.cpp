@@ -6,24 +6,34 @@
 
 using namespace std;
 
-AdjacencyList::AdjacencyList() {
-
+vector<vector<int> > AdjacencyList::getInList() {
+    return inList;
 }
 
+vector<vector<int> > AdjacencyList::getOutList() {
+    return outList;
+}
+
+unordered_map<string, int> AdjacencyList::getPages() {
+    return pages;
+}
+
+AdjacencyList::AdjacencyList() {}
 
 void AdjacencyList::addEdge(const string url1, const string url2) {
 
     if (pages.count(url1) == 0) {
         pages[url1] = pages.size();
-        list.resize(pages[url1] + 1);
-        list[pages[url1]] = {};
+        outList.push_back({});
+        inList.push_back({});
     }
     if (pages.count(url2) == 0) {
         pages[url2] = pages.size();
-        list.resize(pages[url2] + 1);
-        list[pages[url2]] = {};
+        outList.push_back({});
+        inList.push_back({});
     }
-    list[pages[url1]].push_back(pages[url2]);
+    outList[pages[url1]].push_back(pages[url2]);
+    inList[pages[url2]].push_back(pages[url1]);
 }
 
 // prints the PageRank of all pages after p powerIterations in ascending
@@ -32,7 +42,7 @@ string AdjacencyList::pageRank(int &p){
     // optionally, store your output in a string/stringstream and then return it from this function after printing so that it is easier to test with Catch
     string result;
 
-    vector<double> ranks = powerIterator(list, p);
+    vector<double> ranks = powerIterator(outList, inList, p);
 
     map<string, int> sorted;
 
@@ -54,45 +64,35 @@ string AdjacencyList::pageRank(int &p){
 }
 
 int AdjacencyList::getOutDegree(const string &url) {
-    return list[pages[url]].size();
+    return outList[pages[url]].size();
 }
 
-int AdjacencyList::pageCount() {
-    return pages.size();
+int AdjacencyList::getInDegree(const string &url) {
+    return inList[pages[url]].size();
 }
 
-vector<double> powerIterator(const vector<vector<int>> &list, int &p) {
+vector<double> powerIterator(const vector<vector<int>> &outlist, const vector<vector<int>> &inlist, int &p) {
 
     if (p == 1) {
-        vector<double>output(list.size(), 1/(double)list.size());
+        vector<double>output(outlist.size(), 1/(double)outlist.size());
         return output;
     }
 
-    vector<double> vec = powerIterator(list, --p);
-    return dot(list, vec);
+    vector<double> vec = powerIterator(outlist, inlist, --p);
+    return dot(outlist, inlist, vec);
 }
 
-vector<double> dot(const vector<vector<int> > &list, vector<double> &vector) {
+vector<double> dot(const vector<vector<int>> &outList, const vector<vector<int>> &inList, vector<double> &vec) {
 
-    for (int i = 0; i < list.size(); i++) {
+    vector<double> retVec(outList.size());
 
-        double weightSum = 0;
-
-        for (int j = 0; j < list.size(); j++) {
-
-            for (int k = 0; k < list[j].size(); k++) {
-
-                if (list[j][k] == i) {
-                    weightSum += vector[i]/list[j].size();
-                    break;
-                }
-            }
+    for (int i = 0; i < outList.size(); i++) {
+        for (int j = 0; j < inList[i].size(); j++) {
+            retVec[i] += vec[i] / outList[inList[i][j]].size();
         }
-
-        vector[i] = weightSum;
     }
 
-    return vector;
+    return retVec;
 }
 
 
