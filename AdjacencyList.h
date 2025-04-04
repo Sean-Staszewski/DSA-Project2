@@ -9,20 +9,17 @@ using namespace std;
 class AdjacencyList {
 private:
     //Think about what member variables you need to initialize
-
+    unordered_map<string, int> pages;
+    vector<vector<int>> outList;
+    vector<vector<int>> inList;
 
 public:
 
-    unordered_map<string, int> pages;
-    vector<vector<int>> list;
+    unordered_map<string, int> getPages();
 
-    unordered_map<string, int> getPages() {
-        return pages;
-    }
+    vector<vector<int>> getOutList();
 
-    vector<vector<int>> getList() {
-        return list;
-    }
+    vector<vector<int>> getInList();
 
     AdjacencyList();
 
@@ -30,13 +27,13 @@ public:
 
     string pageRank(int &p);
     int getOutDegree(const string &url);
-    int pageCount();
+    int getInDegree(const string &url);
 
 };
 
 
-vector<double> powerIterator(const vector<vector<int>> &list, int &p);
-vector<double> dot(const vector<vector<int>> &list, vector<double> &vector);
+vector<double> powerIterator(const vector<vector<int>> &outlist, const vector<vector<int>> &inlist, int &p);
+vector<double> dot(const vector<vector<int>> &outlist, const vector<vector<int>> &inlist, vector<double> &vec);
 
 
 // This class and method are optional.
